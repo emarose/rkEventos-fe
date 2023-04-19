@@ -1,0 +1,44 @@
+:root {
+  --info: rgba(23, 162, 184, 1);
+  --danger: rgba(220, 53, 69, 1);
+}
+
+body {
+  background-color: #330055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 1000'%3E%3Cg %3E%3Ccircle fill='%23330055' cx='50' cy='0' r='50'/%3E%3Cg fill='%2337005a' %3E%3Ccircle cx='0' cy='50' r='50'/%3E%3Ccircle cx='100' cy='50' r='50'/%3E%3C/g%3E%3Ccircle fill='%233b005f' cx='50' cy='100' r='50'/%3E%3Cg fill='%233f0064' %3E%3Ccircle cx='0' cy='150' r='50'/%3E%3Ccircle cx='100' cy='150' r='50'/%3E%3C/g%3E%3Ccircle fill='%23440169' cx='50' cy='200' r='50'/%3E%3Cg fill='%2348016e' %3E%3Ccircle cx='0' cy='250' r='50'/%3E%3Ccircle cx='100' cy='250' r='50'/%3E%3C/g%3E%3Ccircle fill='%234d0173' cx='50' cy='300' r='50'/%3E%3Cg fill='%23510178' %3E%3Ccircle cx='0' cy='350' r='50'/%3E%3Ccircle cx='100' cy='350' r='50'/%3E%3C/g%3E%3Ccircle fill='%2356017d' cx='50' cy='400' r='50'/%3E%3Cg fill='%235b0282' %3E%3Ccircle cx='0' cy='450' r='50'/%3E%3Ccircle cx='100' cy='450' r='50'/%3E%3C/g%3E%3Ccircle fill='%235f0287' cx='50' cy='500' r='50'/%3E%3Cg fill='%2364028c' %3E%3Ccircle cx='0' cy='550' r='50'/%3E%3Ccircle cx='100' cy='550' r='50'/%3E%3C/g%3E%3Ccircle fill='%23690290' cx='50' cy='600' r='50'/%3E%3Cg fill='%236f0395' %3E%3Ccircle cx='0' cy='650' r='50'/%3E%3Ccircle cx='100' cy='650' r='50'/%3E%3C/g%3E%3Ccircle fill='%2374039a' cx='50' cy='700' r='50'/%3E%3Cg fill='%2379039f' %3E%3Ccircle cx='0' cy='750' r='50'/%3E%3Ccircle cx='100' cy='750' r='50'/%3E%3C/g%3E%3Ccircle fill='%237f04a4' cx='50' cy='800' r='50'/%3E%3Cg fill='%238404a9' %3E%3Ccircle cx='0' cy='850' r='50'/%3E%3Ccircle cx='100' cy='850' r='50'/%3E%3C/g%3E%3Ccircle fill='%238a04ad' cx='50' cy='900' r='50'/%3E%3Cg fill='%238f05b2' %3E%3Ccircle cx='0' cy='950' r='50'/%3E%3Ccircle cx='100' cy='950' r='50'/%3E%3C/g%3E%3Ccircle fill='%239505B7' cx='50' cy='1000' r='50'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+  background-size: contain;
+}
+
+* {
+  color: white;
+}
+
+::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.displayButtons {
+  display: flex !important;
+}
+
+.swal2-title {
+  text-align: left !important;
+  margin-top: 0 !important;
+  line-height: 1.8;
+  border-bottom: 1px solid var(--info);
+}
+
+td {
+  padding: 15px !important;
+}
+
+@media (max-width: 768px) {
+  .displayButtons {
+    display: none !important;
+  }
+}
