@@ -20,17 +20,17 @@ const MyNavbar = () => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <LinkContainer to="/new-order">
-            <Nav.Link>Nueva Orden</Nav.Link>
+          <LinkContainer to="/new-product">
+            <Nav.Link>Nuevo Producto</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/new-event">
             <Nav.Link>Nuevo Evento</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/new-product">
-            <Nav.Link>Nuevo Producto</Nav.Link>
+          <LinkContainer to="/new-order">
+            <Nav.Link>Nueva Orden</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/view-orders">
-            <Nav.Link>Ver Ordenes</Nav.Link>
+          <LinkContainer to="/info">
+            <Nav.Link>Info</Nav.Link>
           </LinkContainer>
         </Nav>
       </Navbar.Collapse>

@@ -1,49 +1,21 @@
 import { useState, useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Alert, Button, Container, Form } from "react-bootstrap";
+import { Button, Container, Form } from "react-bootstrap";
 import { RxTrash } from "react-icons/rx";
 import AxiosInstance from "../../config/apiClient";
-
-type FormData = {
-  event: string;
-  discount: number;
-  paymentMethod: string;
-  products: {
-    product_id: string;
-    quantity: number;
-  }[];
-  totalPrice: number;
-};
-
-type EventOptions = {
-  label: string;
-  value: {
-    event_id: number;
-    description: string;
-    cost: number;
-    event_date: string;
-    address: string;
-  };
-};
-
-type ProductOptions = {
-  label: string;
-  value: {
-    product_id: string;
-    price: string;
-    description: string;
-  };
-};
+import Notification from "../../components/Notification/Notification";
+import {
+  Product,
+  ProductLabel,
+  OrderFormData,
+  EventLabel,
+  Order,
+} from "../../types/types";
+import OrderTable from "../../components/OrderTable/OrderTable";
 
 type SelectedProductItem = {
   product: Product;
   quantity: number;
-};
-
-type Product = {
-  product_id: string;
-  description: string;
-  price: number;
 };
 
 const NewOrder = () => {
@@ -58,14 +30,19 @@ const NewOrder = () => {
   const [productQuantity, setProductQuantity] = useState<number>(1);
 
   const [eventsData, setEventsData] = useState<[]>([]);
+  const [orderData, setOrderData] = useState<Order | null>(null);
+  const [showOrderTable, setShowOrderTable] = useState<Boolean>(false);
 
   const {
     control,
     handleSubmit,
-    register,
+    setValue,
     watch,
+    reset,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<OrderFormData>();
+
+  const discount = watch("discount");
 
   const getAllProducts = async () => {
     await AxiosInstance.get("/products")
@@ -110,8 +87,11 @@ const NewOrder = () => {
       });
   };
 
-  const onSubmit = async (data: FormData) => {
-    let draft = {
+  const onSubmit = async (data: OrderFormData) => {
+    setValue("products", [{ product_id: "", quantity: 1 }]);
+    setValue("paymentMethod", "");
+
+    const draft = {
       event_id: JSON.parse(data.event),
       discount: data.discount || 0,
       payment_method: data.paymentMethod,
@@ -120,7 +100,38 @@ const NewOrder = () => {
 
     await AxiosInstance.post("/orders/add", draft)
       .then((response) => {
-        console.log(response);
+        if (response.status === 200) {
+          Notification.fire({
+            icon: "success",
+            position: "bottom",
+            title: "Orden ingresada exitosamente!",
+          });
+        }
+
+        let order_id = response.data.order_id;
+        if (order_id) {
+          AxiosInstance.get(`/orders/getById/${order_id}`)
+            .then((response: any) => {
+              if (response.status === 200) {
+                Notification.fire({
+                  icon: "success",
+                  position: "bottom",
+                  title: "Orden ingresada exitosamente!",
+                });
+                reset();
+              }
+              setOrderData(response.data[0]);
+              setShowOrderTable(true);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+
+        setProductQuantity(1);
+        setSelectedProducts([]);
+        setValue("event", "");
+        setValue("paymentMethod", "");
       })
       .catch((error) => {
         console.log(error);
@@ -128,8 +139,6 @@ const NewOrder = () => {
   };
 
   const handleAddProduct = () => {
-    selectedProduct;
-    productQuantity;
     if (selectedProduct) {
       setSelectedProducts([
         ...selectedProducts,
@@ -160,7 +169,9 @@ const NewOrder = () => {
           .replace(",", ".")
           .replace(/\$/g, "")
       );
-      return sum + productPrice * addedProduct.quantity;
+
+      let total = Number(sum + productPrice * addedProduct.quantity);
+      return total;
     }, 0);
   }, [selectedProducts]);
 
@@ -191,7 +202,7 @@ const NewOrder = () => {
                 onChange={onChange}
               >
                 <option value={""}>Seleccione</option>
-                {eventsData.map((eventOption: EventOptions, i: number) => (
+                {eventsData.map((eventOption: EventLabel, i: number) => (
                   <option key={i} value={eventOption.value.event_id}>
                     {eventOption.label} -{" "}
                     {new Date(
@@ -244,13 +255,16 @@ const NewOrder = () => {
                 <Form.Select
                   style={{ textTransform: "capitalize" }}
                   className="form-control bg-dark bg-opacity-75 text-info border-info"
-                  onChange={(e) => handleSelectProduct(e)}
+                  onChange={(e) => {
+                    onChange;
+                    handleSelectProduct(e);
+                  }}
                 >
                   <option value={""}>Seleccione</option>
                   {productOptions.map(
-                    (productOption: ProductOptions, i: number) => (
+                    (productOption: ProductLabel, i: number) => (
                       <option key={i} value={productOption.value.description}>
-                        {productOption.label} -{productOption.value.price}
+                        {productOption.label} - {productOption.value.price}
                       </option>
                     )
                   )}
@@ -264,9 +278,11 @@ const NewOrder = () => {
             <Form.Group controlId="quantity">
               <Form.Label>Cantidad</Form.Label>
               <input
+                name="quantity"
+                min={1}
                 className="form-control bg-dark bg-opacity-75 text-info border-info"
                 type="number"
-                defaultValue={1}
+                value={productQuantity}
                 onChange={(e) => setProductQuantity(parseInt(e.target.value))}
               />
             </Form.Group>
@@ -290,7 +306,7 @@ const NewOrder = () => {
               Productos Seleccionados
             </Form.Label>
 
-            <ul className="rounded border border-info shadow-lg p-4 ">
+            <ul className="rounded border border-info shadow p-4 ">
               {selectedProducts.map((addedProduct: any, index: number) => (
                 <li
                   style={{
@@ -315,37 +331,63 @@ const NewOrder = () => {
               ))}
             </ul>
 
-            <div className="text-info text-center">
-              Total a cobrar: <b>${totalPrice}</b>
-            </div>
+            {/* Discount */}
+            <Form.Group controlId="formDiscount">
+              <Form.Label>Descuento</Form.Label>
+              <Controller
+                name="discount"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <Form.Control
+                    className="bg-dark bg-opacity-75 text-info border-info"
+                    type="number"
+                    step=".01"
+                    max={totalPrice}
+                    defaultValue={value}
+                    onChange={onChange}
+                  />
+                )}
+              />
+            </Form.Group>
+
+            <h5 className="text-info shadow text-center my-3 bg-info bg-opacity-25 p-3 border border-info rounded w-75 m-auto">
+              <span className="text-info ">Total a cobrar: </span>
+              <span>
+                {totalPrice.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}{" "}
+                -{" "}
+                {(discount ? parseFloat(discount) : 0).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }) || "$0"}{" "}
+                ={" "}
+                {(
+                  totalPrice - (discount ? parseFloat(discount) : 0)
+                ).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }) || "$0"}
+              </span>
+            </h5>
           </Container>
         )}
 
         {errors.products && <Form.Text>{errors.products.message}</Form.Text>}
 
-        {/* Discount */}
-        <Form.Group controlId="formDiscount">
-          <Form.Label>Descuento</Form.Label>
-          <Controller
-            name="discount"
-            control={control}
-            render={({ field: { value, onChange } }) => (
-              <Form.Control
-                defaultValue={0}
-                className="bg-dark bg-opacity-75 text-info border-info"
-                type="number"
-                step="1"
-                value={value}
-                onChange={onChange}
-              />
-            )}
-          />
-        </Form.Group>
-
         <Button className="btn btn-info shadow-lg mt-4" type="submit">
           Finalizar
         </Button>
       </Form>
+
+      {showOrderTable &&
+        (orderData ? (
+          <>
+            <h4 className="text-center mt-5">Última orden ingresada</h4>
+            <OrderTable order={orderData} />
+          </>
+        ) : null)}
     </Container>
   );
 };

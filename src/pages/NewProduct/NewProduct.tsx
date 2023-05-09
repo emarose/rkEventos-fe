@@ -160,7 +160,7 @@ const NewProduct: React.FC = () => {
   }, []);
 
   return (
-    <Container className="mt-5">
+    <Container>
       <h1 className="text-info my-4">Nuevo Producto</h1>
       <Form
         onSubmit={handleSubmit(submitProduct)}
@@ -219,7 +219,7 @@ const NewProduct: React.FC = () => {
             </Button>
           </span>
         ) : (
-          <Button className="btn btn-info shadow-lg mt-4" type="submit">
+          <Button className="btn btn-info shadow-lg my-4" type="submit">
             Finalizar
           </Button>
         )}
@@ -227,71 +227,81 @@ const NewProduct: React.FC = () => {
 
       {addedProducts.length > 0 && (
         <>
-          <p className="text-info mt-5">Productos ingresados</p>
-          <Container className="p-2 border-info border rounded d-flex justify-content-center gap-2 flex-wrap">
+          <h5 className="text-info text-center mb-4 mt-5">
+            Productos Ingresados
+          </h5>
+          <Container style={{ maxWidth: 1000 }} className="">
             {addedProducts.map((product: FormValues) => (
-              <span
+              <div
                 onClick={(e) => handleProductDetails(e, product)}
                 key={product.product_id}
-                style={{ cursor: "pointer" }}
-                className="bg-info bg-opacity-25 py-1 px-3 rounded d-flex gap-2 align-items-center justify-content-between "
+                style={{
+                  cursor: "pointer",
+                  border: "1px solid transparent",
+                }}
+                className="bg-info p-2 my-1 bg-opacity-25 rounded"
               >
-                <span
-                  style={{
-                    textTransform: "capitalize",
-                    textOverflow: "ellipsis",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {product.description}
-                </span>
-                <span className="mx-5 px-5">{product.price}</span>
-                <span className="py-1 s px-2 rounded gap-2 position-relative displayButtons">
-                  {confirmDelete === product.product_id && (
-                    <div
-                      style={{ translate: -30 }}
-                      className="confirmDeletionButtons d-flex position-absolute bottom-100 gap-2 p-1"
+                <div className="mx-1 row d-flex align-items-center">
+                  <span
+                    className="col-md-7"
+                    style={{
+                      textTransform: "capitalize",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {product.description}
+                  </span>
+                  <span className="col-md-3">{product.price}</span>
+                  <span className="col-md-1 rounded gap-2 position-relative displayButtons">
+                    {confirmDelete === product.product_id && (
+                      <div
+                        style={{ translate: -30 }}
+                        className="confirmDeletionButtons d-flex position-absolute bottom-100 gap-2 p-1"
+                      >
+                        <button
+                          type="button"
+                          onClick={(e) =>
+                            handleConfirmDelete(e, product.product_id)
+                          }
+                          style={{ width: 40, height: 40 }}
+                          className="btn btn-success shadow-lg d-flex justify-content-center align-items-center rounded-circle p-2"
+                        >
+                          <RxCheck size={20} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setConfirmDelete(null);
+                          }}
+                          style={{ width: 40, height: 40, zIndex: 100 }}
+                          className="btn btn-danger shadow-lg d-flex justify-content-center align-items-center rounded-circle p-2"
+                        >
+                          <RxCross2 size={18} />
+                        </button>
+                      </div>
+                    )}
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={(e) =>
+                        handleDeleteProduct(e, product.product_id)
+                      }
                     >
-                      <button
-                        type="button"
-                        onClick={(e) =>
-                          handleConfirmDelete(e, product.product_id)
-                        }
-                        style={{ width: 40, height: 40 }}
-                        className="btn btn-success shadow-lg d-flex justify-content-center align-items-center rounded-circle p-2"
-                      >
-                        <RxCheck size={20} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setConfirmDelete(null);
-                        }}
-                        style={{ width: 40, height: 40, zIndex: 100 }}
-                        className="btn btn-danger shadow-lg d-flex justify-content-center align-items-center rounded-circle p-2"
-                      >
-                        <RxCross2 size={18} />
-                      </button>
-                    </div>
-                  )}
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={(e) => handleDeleteProduct(e, product.product_id)}
-                  >
-                    <RxTrash size={20} />
-                  </Button>
-                  <Button
-                    variant="outline-info"
-                    size="sm"
-                    onClick={(e) => handleEditProduct(e, product)}
-                  >
-                    <RxPencil1 size={20} />
-                  </Button>
-                </span>
-              </span>
+                      <RxTrash size={20} />
+                    </Button>
+                    <Button
+                      variant="outline-info"
+                      size="sm"
+                      onClick={(e) => handleEditProduct(e, product)}
+                    >
+                      <RxPencil1 size={20} />
+                    </Button>
+                  </span>
+                </div>
+              </div>
             ))}
           </Container>
         </>

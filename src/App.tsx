@@ -3,10 +3,11 @@ import MyNavbar from "./components/MyNavbar/MyNavbar";
 import NewOrderForm from "./pages/NewOrder/NewOrder";
 import NewEventForm from "./pages/NewEvent/NewEvent";
 import NewProductForm from "./pages/NewProduct/NewProduct";
-import ViewOrders from "./pages/ViewOrders/ViewOrders";
+import Info from "./pages/Info/Info";
 import Home from "./pages/Home/Home";
 import { Container } from "react-bootstrap";
 import "./App.css";
+import "react-calendar/dist/Calendar.css";
 
 const App = () => {
   return (
@@ -14,13 +15,16 @@ const App = () => {
       <MyNavbar />
       <Container
         style={{
-          maxWidth: 1000,
+          maxWidth: 1100,
           paddingBlock: 50,
         }}
       >
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/view-orders" element={<ViewOrders />} />
+          <Route
+            path="/info/:params_eventid?/:params_orderid?"
+            element={<Info />}
+          />
           <Route path="/new-order" element={<NewOrderForm />} />
           <Route path="/new-event" element={<NewEventForm />} />
           <Route path="/new-product" element={<NewProductForm />} />

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Form, Button, Alert, Container } from "react-bootstrap";
+import { Form, Button, Alert, Container, Row, Col } from "react-bootstrap";
 import AxiosInstance from "../../config/apiClient";
 import Notification from "../../components/Notification/Notification";
 import { RxCheck, RxCross2, RxPencil1, RxTrash } from "react-icons/rx";
 import Swal from "sweetalert2";
+import Calendar from "react-calendar";
+
+import "./EventCalendar.css";
 
 type FormValues = {
   event_id: number;
@@ -19,9 +22,7 @@ const NewEvent: React.FC = () => {
     register,
     reset,
     handleSubmit,
-
     setValue,
-    getValues,
     watch,
     formState: { errors },
   } = useForm<FormValues>();
@@ -31,6 +32,8 @@ const NewEvent: React.FC = () => {
   const [isEditing, setIsEditing] = useState<Object>({});
 
   const submitEvent = async (data: FormValues) => {
+    Object.assign(data, { event_date: date });
+
     await AxiosInstance.post("/events/add", data)
       .then((response) => {
         if (response.status === 200) {
@@ -66,7 +69,6 @@ const NewEvent: React.FC = () => {
       .then((response) => {
         getAllEvents();
         reset();
-        console.log(response);
       })
       .catch((error) => {
         console.log(error);
@@ -182,10 +184,26 @@ const NewEvent: React.FC = () => {
   useEffect(() => {
     getAllEvents();
   }, []);
+  const [date, setDate] = useState<any>(new Date());
 
   return (
     <Container>
-      <h1 className="text-info my-4">Nuevo Evento</h1>
+      <h1 className="text-info mt-4 mb-5">Nuevo Evento</h1>
+      <Row className="d-grid align-items-center justify-content-center">
+        <Col>
+          <Calendar
+            className="react-calendar"
+            onChange={setDate}
+            view={"month"}
+            locale="es"
+            value={date}
+            selectRange={false}
+          />
+        </Col>
+        <p className="text-center my-4 p-3 border-info border rounded bg-info bg-opacity-25">
+          Fecha de realización: <b>{date.toLocaleDateString()}</b>
+        </p>
+      </Row>
 
       <Form
         onSubmit={handleSubmit(submitEvent)}
@@ -217,18 +235,6 @@ const NewEvent: React.FC = () => {
           )}
           {errors.cost?.type === "min" && (
             <Alert variant="danger">Costo debe ser mayor o igual a 0</Alert>
-          )}
-        </Form.Group>
-
-        <Form.Group controlId="event_date">
-          <Form.Label>Fecha de Realización</Form.Label>
-          <Form.Control
-            className="form-control bg-dark bg-opacity-75 text-info border-info"
-            type="date"
-            {...register("event_date", { required: true })}
-          />
-          {errors.event_date && (
-            <Alert variant="danger">Ingrese la fecha del evento.</Alert>
           )}
         </Form.Group>
 
@@ -274,7 +280,7 @@ const NewEvent: React.FC = () => {
       {addedEvents.length > 0 && (
         <>
           <p className="text-info mt-5">Eventos ingresados</p>
-          <Container className="p-2 border-info border rounded d-flex justify-content-center gap-2 flex-wrap">
+          <Container className="p-2 border-info border rounded d-flex justify-content-center gap-2 flex-column">
             {addedEvents.map((event: FormValues) => (
               <span
                 onClick={(e) => handleEventDetails(e, event)}
@@ -292,7 +298,7 @@ const NewEvent: React.FC = () => {
                 >
                   {event.description}
                 </span>
-                <span className="">{event.cost}</span>
+                <span>{event.cost}</span>
                 <span className="">
                   {new Date(event.event_date).toLocaleDateString("es-AR", {
                     month: "2-digit",

@@ -1,0 +1,95 @@
+.react-calendar {
+  border: unset !important;
+  background-color: transparent !important;
+}
+.react-calendar__navigation__prev2-button {
+  display: none;
+}
+.react-calendar__navigation__next2-button {
+  display: none;
+}
+.react-calendar__navigation {
+  align-items: center;
+}
+abbr[title] {
+  background-color: var(--info);
+  padding: 4px;
+  border-radius: 8px;
+  border-bottom: none;
+  -webkit-text-decoration: unset;
+  text-decoration: unset;
+  -webkit-text-decoration: unset;
+  -webkit-text-decoration: unset;
+  text-decoration: unset !important;
+}
+.react-calendar__navigation__prev-button {
+  background-color: var(--info) !important;
+  border-radius: 10px;
+  min-width: 34px !important;
+  height: 34px !important;
+  color: white;
+}
+.react-calendar__navigation__next-button {
+  background-color: var(--info) !important;
+  border-radius: 10px;
+  min-width: 34px !important;
+  width: 34px !important;
+  height: 34px !important;
+  color: white;
+}
+.react-calendar__navigation__label {
+  font-weight: 700 !important;
+  font-size: 18px;
+}
+
+.react-calendar__tile {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px !important;
+  height: 38px !important;
+}
+
+.react-calendar__tile--active {
+  background-color: var(--info) !important;
+}
+.react-calendar__month-view__weekdays {
+  background-color: var(--info-trans);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  padding: 15px;
+}
+.react-calendar__month-view__days__day:focus {
+  background-color: var(--info) !important;
+}
+.react-calendar__tile--now,
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background-color: var(--info-trans) !important;
+  border-radius: 10px;
+  padding: 10px 0;
+}
+
+.react-calendar button:enabled:hover {
+  background-color: var(--info-trans);
+  border: 1px solid var(--info);
+}
+.react-calendar button {
+  margin: 5px 0;
+  border-radius: 8px;
+}
+
+.form-check-input[type="checkbox"] {
+  font-size: 4ch !important;
+
+  border: 1px solid var(--info) !important;
+}
+
+.form-check-input[type="checkbox"]:checked {
+  background-color: var(--info-trans) !important;
+}
+
+.form-check-input[type="checkbox"] {
+  background-color: var(--info-trans) !important;
+}
