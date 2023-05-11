@@ -88,9 +88,13 @@ const NewOrder = () => {
   };
 
   const onSubmit = async (data: OrderFormData) => {
-    setValue("products", [{ product_id: "", quantity: 1 }]);
-    setValue("paymentMethod", "");
-
+    if (selectedProducts.length < 1) {
+      return Notification.fire({
+        icon: "error",
+        position: "top",
+        title: "Ingrese al menos un producto a la orden!",
+      });
+    }
     const draft = {
       event_id: JSON.parse(data.event),
       discount: data.discount || 0,
@@ -118,7 +122,6 @@ const NewOrder = () => {
                   position: "bottom",
                   title: "Orden ingresada exitosamente!",
                 });
-                reset();
               }
               setOrderData(response.data[0]);
               setShowOrderTable(true);
@@ -127,11 +130,10 @@ const NewOrder = () => {
               console.log(error);
             });
         }
-
+        setValue("paymentMethod", "efectivo");
+        setValue("products", []);
         setProductQuantity(1);
         setSelectedProducts([]);
-        setValue("event", "");
-        setValue("paymentMethod", "");
       })
       .catch((error) => {
         console.log(error);
@@ -229,11 +231,11 @@ const NewOrder = () => {
                 value={value}
                 onChange={onChange}
               >
-                <option value={""}>Seleccione</option>
                 <option value="efectivo">Efectivo</option>
                 <option value="transferencia">Transferencia</option>
               </Form.Select>
             )}
+            defaultValue="efectivo"
           />
           {errors.paymentMethod && (
             <Form.Text>{errors.paymentMethod.message}</Form.Text>
@@ -301,38 +303,36 @@ const NewOrder = () => {
         </Form.Group>
 
         {selectedProducts?.length > 0 && (
-          <Container fluid className="mt-4">
-            <Form.Label className="text-info">
-              Productos Seleccionados
-            </Form.Label>
-
-            <ul className="rounded border border-info shadow p-4 ">
-              {selectedProducts.map((addedProduct: any, index: number) => (
-                <li
-                  style={{
-                    maxWidth: 600,
-                    minWidth: 200,
-                    textTransform: "capitalize",
-                  }}
-                  className="list-unstyled border gap-4 d-flex align-items-center justify-content-between border-info bg-opacity-25 bg-info my-2 py-1 px-2 rounded"
-                  key={index}
-                >
-                  <span>{addedProduct.product.description} </span>
-                  <span>{addedProduct.product.price}</span>
-                  <span>({addedProduct.quantity})</span>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleRemoveProduct(index)}
+          <Container fluid className="mt-3">
+            <ul className="rounded border border-info shadow py-2 d-flex  flex-column align-items-center">
+              {selectedProducts.map(
+                (addedProduct: SelectedProductItem, index: number) => (
+                  <li
+                    style={{
+                      maxWidth: 600,
+                      minWidth: 200,
+                      textTransform: "capitalize",
+                    }}
+                    className="list-unstyled border gap-4 d-flex align-items-center justify-content-between border-info bg-opacity-25 bg-info my-2 py-1 px-2 rounded"
+                    key={index}
                   >
-                    <RxTrash size={24} />
-                  </Button>
-                </li>
-              ))}
+                    <span>{addedProduct.product.description} </span>
+                    <span>{addedProduct.product.price}</span>
+                    <span>({addedProduct.quantity})</span>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleRemoveProduct(index)}
+                    >
+                      <RxTrash size={24} />
+                    </Button>
+                  </li>
+                )
+              )}
             </ul>
 
             {/* Discount */}
-            <Form.Group controlId="formDiscount">
+            <Form.Group controlId="formDiscount" className="mt-4">
               <Form.Label>Descuento</Form.Label>
               <Controller
                 name="discount"

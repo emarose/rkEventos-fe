@@ -17,14 +17,14 @@ const HomeProductsCard = (popularProducts: HomeProductsCardProps) => {
       {popularProducts.products.map(
         (product: PopularProduct, index: number) => (
           <Card.Body
-            className="border-bottom border-info "
+            className="border-bottom border-info"
             key={product.product_id}
           >
             <Row
               key={product.product_id}
               className="d-flex align-items-center justify-content-center"
             >
-              <Col sm={7} md={7} className="align-self-end ">
+              <Col sm={7} md={7} className="align-self-end">
                 <p className="text-info text-center text-nowrap " style={{}}>
                   {index === 0 && "Producto"}
                   <small
