@@ -23,8 +23,9 @@ const Home = () => {
   const getLastEvents = async () => {
     await AxiosInstance.get("/events/getLastEvents")
       .then((response) => {
+        console.log(response["data"].rows);
         let addedEvents: Event[] = response["data"].rows;
-        setLastEvents(addedEvents.slice(0, 10));
+        setLastEvents(addedEvents);
       })
       .catch((error) => {
         console.log(error);
@@ -86,7 +87,7 @@ const Home = () => {
               <Col md={6} xl={7}>
                 <h3 className="text-center mt-3 mb-4">Últimos Eventos</h3>
                 {lastEvents.map((event: Event, i: number) => (
-                  <div key={i}>
+                  <div key={i} className="my-4">
                     <HomeEventCard event={event} />
                   </div>
                 ))}
