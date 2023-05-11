@@ -19,21 +19,21 @@ const HomeEventCard = ({ event }: HomeEventCardProps) => {
     <Card
       bg="dark"
       text="light"
-      className="shadow-lg px-4 bg-opacity-75"
+      className="shadow-lg px-2 bg-opacity-75"
       id="homeEventCard"
     >
       <Card.Body>
         <Row>
           {/* Left side */}
           <Col
-            style={{ minWidth: "18ch" }}
-            md={4}
-            className="border rounded border-info py-4 px-3 d-flex flex-column gap-2 justify-content-center align-align-items-center"
+            md={12}
+            xl={5}
+            className="border rounded border-info py-3 px-3 d-flex flex-column gap-2 justify-content-center"
           >
             <Card.Title className="text-info text-capitalize fs-4">
               {event.description}
             </Card.Title>
-            <span className="d-flex align-align-items-center justify-content-start gap-3">
+            <span className="d-flex align-align-items-center justify-content-start gap-4">
               <Card.Subtitle className="mb-3 text-muted text-capitalize">
                 {event.address}
               </Card.Subtitle>
@@ -42,6 +42,7 @@ const HomeEventCard = ({ event }: HomeEventCardProps) => {
               </Card.Subtitle>
             </span>
             <Button
+              style={{ maxWidth: "18ch" }}
               variant="info"
               onClick={() => navigate(`/info/${event.event_id}`)}
             >
@@ -49,26 +50,32 @@ const HomeEventCard = ({ event }: HomeEventCardProps) => {
             </Button>
           </Col>
           {/* Right side */}
-          <Col md={8}>
-            <Row className="border-bottom border-info">
+          <Col md={12} xl={7} className="">
+            <Row className="border-bottom border-info pt-3 mb-2">
+              <Card.Title className="text-info text-center fs-4 m-0">
+                Balance
+              </Card.Title>
               <Col
                 xs={6}
                 md={6}
-                className="d-flex flex-column align-items-center justify-content-center py-3"
+                className="d-flex flex-column align-items-center justify-content-center"
               >
                 {/* Upper left */}
-                <div className="text-center">
-                  <Card.Title className="text-info">Balance</Card.Title>
-                  <div className="my-2">
+                <div className="text-center ">
+                  <div className="d-flex flex-column gap-1 justify-content-center align-items-center">
                     {event.balance >= 1 ? (
                       <>
-                        <AiOutlineRise size={40} className="mb-2" />
-                        <Card.Subtitle className="">Positivo</Card.Subtitle>
+                        <AiOutlineRise size={50} className="mb-2" />
+                        <Card.Subtitle className="text-success fs-5">
+                          Positivo
+                        </Card.Subtitle>
                       </>
                     ) : (
                       <>
-                        <AiOutlineFall size={40} className="mb-2" />
-                        <Card.Subtitle className="">Negativo</Card.Subtitle>
+                        <AiOutlineFall size={50} className="mb-2" />
+                        <Card.Subtitle className="text-danger fs-5">
+                          Negativo
+                        </Card.Subtitle>
                       </>
                     )}
                   </div>
@@ -80,10 +87,12 @@ const HomeEventCard = ({ event }: HomeEventCardProps) => {
                 className="d-flex flex-column align-items-center justify-content-center py-3"
               >
                 <div className="text-center">
-                  <Card.Title className="text-info">Ganancias</Card.Title>
-                  <div className="my-2">
-                    <AiOutlineDollarCircle size={40} className="mb-2" />
-                    <Card.Subtitle className="">
+                  <div className="">
+                    <AiOutlineDollarCircle size={50} className="mb-2" />
+                    <Card.Subtitle
+                      className="fs-3"
+                      style={{ letterSpacing: 1 }}
+                    >
                       {event.balance_currency}
                     </Card.Subtitle>
                   </div>
@@ -96,7 +105,7 @@ const HomeEventCard = ({ event }: HomeEventCardProps) => {
                 className="d-flex align-items-center justify-content-center gap-5 py-4"
               >
                 {/* Bottom */}
-                <div className="text-center">
+                <div className="text-center d-flex flex-column align-items-center gap-2">
                   <RiVipCrownLine size={32} />
                   <Card.Title className="text-info">Mejor Orden</Card.Title>
                   <Card.Subtitle className="">

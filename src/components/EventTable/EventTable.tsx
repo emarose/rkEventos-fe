@@ -13,7 +13,7 @@ type EventTableProps = {
 
 const EventTable = ({ event, fetchData }: EventTableProps) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  console.log(event);
+
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const handleConfirmDeleteOrder = async (
@@ -95,7 +95,7 @@ const EventTable = ({ event, fetchData }: EventTableProps) => {
                     <b> {event[0].payment_methods.transferencia || "-"}</b>
                   </p>
                   <hr />
-                  {event[0].grand_total}
+                  Total Cobrado: <b>{event[0].grand_total}</b>
                 </Col>
               </Row>
             </Row>

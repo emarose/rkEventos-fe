@@ -14,8 +14,9 @@ const App = () => {
     <BrowserRouter>
       <MyNavbar />
       <Container
+        fluid
         style={{
-          maxWidth: 1100,
+          maxWidth: 1400,
           paddingBlock: 50,
         }}
       >

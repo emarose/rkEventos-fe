@@ -98,6 +98,14 @@ export type ProductLabel = {
     description: string;
   };
 };
+export type PopularProduct = {
+  description: string,
+  price: number,
+  product_id: string,
+  profits: number,
+  profits_currency: string,
+  quantity: string,
+};
 
 export type PaymentMethods = {
   efectivo?: string;
