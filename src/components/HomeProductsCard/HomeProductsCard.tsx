@@ -11,63 +11,52 @@ const HomeProductsCard = (popularProducts: HomeProductsCardProps) => {
     <Card
       bg="dark"
       text="light"
-      className="shadow-lg bg-opacity-75 gap-2"
+      className="shadow-lg bg-opacity-75"
       id="homeEventCard"
     >
-      {popularProducts.products.map(
-        (product: PopularProduct, index: number) => (
-          <Card.Body
-            className="border-bottom border-info"
-            key={product.product_id}
-          >
-            <Row
-              key={product.product_id}
-              className="d-flex align-items-center justify-content-center"
-            >
-              <Col sm={7} md={7} className="align-self-end">
-                <p className="text-info text-center text-nowrap " style={{}}>
-                  {index === 0 && "Producto"}
-                  <small
-                    className="d-block "
-                    style={{
-                      fontSize: "larger",
-                      textOverflow: "ellipsis",
-                      width: "100%",
-
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {product.description}
-                  </small>
-                </p>
-              </Col>
-              <Col sm={2} md={2}>
-                <p className="text-info text-center text-nowrap">
-                  {index === 0 && "Cantidad"}
-                  <small
-                    className="d-block"
-                    style={{ fontWeight: 500, fontSize: "larger" }}
-                  >
-                    {product.quantity}
-                  </small>
-                </p>
-              </Col>
-              <Col sm={3} md={3} className="text-right text-nowrap">
-                <p className="text-info ">
-                  {index === 0 && "Ganancias"}
-                  <small
-                    className="d-block fs-5"
-                    style={{ fontWeight: 500, letterSpacing: 0.85 }}
-                  >
-                    {product.profits_currency}
-                  </small>
-                </p>
-              </Col>
-            </Row>
-          </Card.Body>
-        )
-      )}
+      <Card.Body className="">
+        <table className="table-borderless w-100">
+          <thead style={{ textAlign: "center" }}>
+            <tr className="border-bottom border-info">
+              <th
+                style={{
+                  textAlign: "left",
+                  fontWeight: 500,
+                  paddingInlineStart: 15,
+                }}
+              >
+                Producto
+              </th>
+              <th style={{ textAlign: "center", fontWeight: 500 }}>Cantidad</th>
+              <th
+                style={{
+                  textAlign: "right",
+                  fontWeight: 500,
+                  paddingInlineEnd: 15,
+                }}
+              >
+                Ganancias
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {popularProducts.products.map((product: PopularProduct) => (
+              <tr key={product.product_id}>
+                <td style={{ textTransform: "capitalize" }}>
+                  {product.description}
+                </td>
+                <td style={{ textAlign: "center" }}>{product.quantity}</td>
+                <td
+                  className="text-info"
+                  style={{ textAlign: "right", fontWeight: 600 }}
+                >
+                  {product.profits_currency}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card.Body>
     </Card>
   );
 };

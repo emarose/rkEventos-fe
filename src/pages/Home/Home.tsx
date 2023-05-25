@@ -8,6 +8,7 @@ import HomeEventCard from "../../components/HomeEventCard/HomeEventCard";
 import AxiosInstance from "../../config/apiClient";
 import { Event, PopularProduct } from "../../types/types";
 import HomeProductsCard from "../../components/HomeProductsCard/HomeProductsCard";
+import { Chart } from "react-google-charts";
 
 const cardsData = [
   { title: "Productos", icon: <BiBox />, href: "/new-product" },
@@ -19,11 +20,17 @@ const cardsData = [
 const Home = () => {
   const [lastEvents, setLastEvents] = useState<Event[]>([]);
   const [popularProducts, setPopularProducts] = useState<PopularProduct[]>([]);
+  const [popularPayMethods, setPopularPayMethods] = useState<{
+    efectivo: number | null;
+    transferencia: number | null;
+  }>({
+    efectivo: null,
+    transferencia: null,
+  });
 
   const getLastEvents = async () => {
     await AxiosInstance.get("/events/getLastEvents")
       .then((response) => {
-        console.log(response["data"].rows);
         let addedEvents: Event[] = response["data"].rows;
         setLastEvents(addedEvents);
       })
@@ -33,6 +40,19 @@ const Home = () => {
 
     await AxiosInstance.get("/events/getById/6")
       .then((response) => {})
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getPopularPayMethods = async () => {
+    await AxiosInstance.get("/events/getPopularPayMethods")
+      .then((response) => {
+        let payMethods = response.data["rows"];
+        console.log(payMethods[0]);
+
+        setPopularPayMethods(payMethods[0]);
+      })
       .catch((error) => {
         console.log(error);
       });
@@ -48,17 +68,28 @@ const Home = () => {
       .catch((error) => {
         console.log(error);
       });
-
-    await AxiosInstance.get("/events/getById/6")
-      .then((response) => {})
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
+  const data = [
+    ["Category", "Amount"],
+    ["Efectivo", popularPayMethods.efectivo],
+    ["Transferencia", popularPayMethods.transferencia],
+  ];
+
+  const options = {
+    legend: "none",
+    pieSliceText: "label",
+    colors: ["#0dcaf0", "#6f42c1"],
+    pieSliceTextStyle: {
+      color: "black",
+    },
+
+    backgroundColor: "transparent",
+  };
   useEffect(() => {
     getLastEvents();
     getPopularProducts();
+    getPopularPayMethods();
   }, []);
 
   return (
@@ -94,9 +125,22 @@ const Home = () => {
               </Col>
             )}
             {popularProducts.length > 0 && (
-              <Col md={6} xl={5}>
-                <h3 className="text-center mt-3 mb-4">
-                  Productos Más Populares
+              <Col md={6} xl={5} className="">
+                <h3 className="text-center mb-0 mt-4">
+                  <BiStar /> Métodos de Pago <BiStar />
+                </h3>
+                <div className="d-flex align-items-center justify-content-center">
+                  <Chart
+                    chartType="PieChart"
+                    data={data}
+                    options={options}
+                    width="400px"
+                    height="400px"
+                    legendToggle
+                  />
+                </div>
+                <h3 className="text-center mt-0 mb-4">
+                  <BiStar /> Productos <BiStar />
                 </h3>
                 <HomeProductsCard products={popularProducts} />
               </Col>
