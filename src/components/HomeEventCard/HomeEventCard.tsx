@@ -14,6 +14,7 @@ interface HomeEventCardProps {
 
 const HomeEventCard = ({ event }: HomeEventCardProps) => {
   const navigate = useNavigate();
+  console.log(event);
 
   return (
     <Card

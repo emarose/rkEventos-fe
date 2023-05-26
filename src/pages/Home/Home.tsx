@@ -37,20 +37,12 @@ const Home = () => {
       .catch((error) => {
         console.log(error);
       });
-
-    await AxiosInstance.get("/events/getById/6")
-      .then((response) => {})
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
   const getPopularPayMethods = async () => {
     await AxiosInstance.get("/events/getPopularPayMethods")
       .then((response) => {
         let payMethods = response.data["rows"];
-        console.log(payMethods[0]);
-
         setPopularPayMethods(payMethods[0]);
       })
       .catch((error) => {
@@ -62,7 +54,6 @@ const Home = () => {
     await AxiosInstance.get("/products/getPopularProducts")
       .then((response) => {
         let popularProducts: PopularProduct[] = response.data;
-
         setPopularProducts(popularProducts);
       })
       .catch((error) => {
