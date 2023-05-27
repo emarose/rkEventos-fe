@@ -9,6 +9,7 @@ import AxiosInstance from "../../config/apiClient";
 import { Event, PopularProduct } from "../../types/types";
 import HomeProductsCard from "../../components/HomeProductsCard/HomeProductsCard";
 import { Chart } from "react-google-charts";
+import ExcelReader from "../../components/ExcelReader/ExcelReader";
 
 const cardsData = [
   { title: "Productos", icon: <BiBox />, href: "/new-product" },
@@ -63,8 +64,8 @@ const Home = () => {
 
   const data = [
     ["Category", "Amount"],
-    ["Efectivo", popularPayMethods.efectivo],
-    ["Transferencia", popularPayMethods.transferencia],
+    ["Efectivo", popularPayMethods?.efectivo],
+    ["Transferencia", popularPayMethods?.transferencia],
   ];
 
   const options = {
@@ -74,9 +75,9 @@ const Home = () => {
     pieSliceTextStyle: {
       color: "black",
     },
-
     backgroundColor: "transparent",
   };
+
   useEffect(() => {
     getLastEvents();
     getPopularProducts();
@@ -134,6 +135,9 @@ const Home = () => {
                   <BiStar /> Productos <BiStar />
                 </h3>
                 <HomeProductsCard products={popularProducts} />
+                <h3 className="text-center mt-0 mb-4">
+                  <BiStar /> Eventos <BiStar />
+                </h3>
               </Col>
             )}
             {!popularProducts && !lastEvents && ""}

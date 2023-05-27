@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Form, Button, Container } from "react-bootstrap";
+import { Form, Button, Container, Modal } from "react-bootstrap";
 import { RxPencil1, RxCheck, RxTrash, RxCross2 } from "react-icons/rx";
 import AxiosInstance from "../../config/apiClient";
 import Notification from "../../components/Notification/Notification";
 import Swal from "sweetalert2";
+import ExcelReader from "../../components/ExcelReader/ExcelReader";
 
 type FormValues = {
   product_id: number;
@@ -25,6 +26,7 @@ const NewProduct: React.FC = () => {
   const [addedProducts, setAddedProducts] = useState<FormValues[]>([]);
   const [confirmDelete, setConfirmDelete] = useState<Number | null>(null);
   const [isEditing, setIsEditing] = useState<Object>({});
+  const [showModal, setShowModal] = useState(false);
 
   const submitProduct = async (data: FormValues) => {
     await AxiosInstance.post("/products/add", data)
@@ -162,6 +164,7 @@ const NewProduct: React.FC = () => {
   return (
     <Container>
       <h1 className="text-info my-4">Nuevo Producto</h1>
+
       <Form
         onSubmit={handleSubmit(submitProduct)}
         className="d-flex flex-column gap-4"
@@ -224,6 +227,25 @@ const NewProduct: React.FC = () => {
           </Button>
         )}
       </Form>
+
+      <Button variant="dark" onClick={() => setShowModal(true)}>
+        Ingresar productos con archivo Excel
+      </Button>
+
+      <Modal
+        size="lg"
+        centered
+        className="bg-dark bg-opacity-25"
+        show={showModal}
+        onHide={() => setShowModal(false)}
+      >
+        <Modal.Header className="bg-dark border-info" closeButton>
+          <Modal.Title>Ingresar Productos con Archivo Excel</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-dark">
+          <ExcelReader />
+        </Modal.Body>
+      </Modal>
 
       {addedProducts.length > 0 && (
         <>
