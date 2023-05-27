@@ -243,7 +243,7 @@ const NewProduct: React.FC = () => {
           <Modal.Title>Ingresar Productos con Archivo Excel</Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark">
-          <ExcelReader />
+          <ExcelReader getAllProducts={getAllProducts} />
         </Modal.Body>
       </Modal>
 

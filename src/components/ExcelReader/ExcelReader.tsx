@@ -1,8 +1,13 @@
 import React, { useState, ChangeEvent } from "react";
 import { Button, Form } from "react-bootstrap";
 import * as XLSX from "xlsx";
+import AxiosInstance from "../../config/apiClient";
+import Notification from "../Notification/Notification";
 
-const ExcelReader: React.FC = () => {
+interface Props {
+  getAllProducts: () => Promise<void>;
+}
+const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
   const [file, setFile] = useState<File | null>(null);
   const [uniqueRows, setUniqueRows] = useState<string[][]>([]);
 
@@ -49,12 +54,27 @@ const ExcelReader: React.FC = () => {
     }
   };
 
-  const handleBulkUpload = () => {
+  const handleBulkUpload = async () => {
     const formattedData = uniqueRows.map((product) => ({
       description: `${product[6]} ${product[7]}`,
       price: product[10],
     }));
 
+    await AxiosInstance.post("/products/addBulk", formattedData)
+      .then((response) => {
+        if (response.status === 200) {
+          Notification.fire({
+            icon: "success",
+            position: "bottom",
+            title: "Producto ingresado exitosamente!",
+          });
+
+          getAllProducts();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     console.log(formattedData);
   };
 
@@ -80,7 +100,7 @@ const ExcelReader: React.FC = () => {
         )}
 
         {uniqueRows.length > 0 && (
-          <Button className="w-25" variant="info" onClick={handleBulkUpload}>
+          <Button className="" variant="info" onClick={handleBulkUpload}>
             Ingresar productos
           </Button>
         )}
