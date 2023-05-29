@@ -164,7 +164,6 @@ const NewProduct: React.FC = () => {
   return (
     <Container>
       <h1 className="text-info my-4">Nuevo Producto</h1>
-
       <Form
         onSubmit={handleSubmit(submitProduct)}
         className="d-flex flex-column gap-4"
@@ -229,7 +228,7 @@ const NewProduct: React.FC = () => {
       </Form>
 
       <Button variant="dark" onClick={() => setShowModal(true)}>
-        Ingresar productos con archivo Excel
+        Ingresar productos con Archivo Excel
       </Button>
 
       <Modal
@@ -239,7 +238,11 @@ const NewProduct: React.FC = () => {
         show={showModal}
         onHide={() => setShowModal(false)}
       >
-        <Modal.Header className="bg-dark border-info" closeButton>
+        <Modal.Header
+          className="bg-dark border-info"
+          closeButton
+          closeVariant="white"
+        >
           <Modal.Title>Ingresar Productos con Archivo Excel</Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark">
@@ -252,7 +255,7 @@ const NewProduct: React.FC = () => {
           <h5 className="text-info text-center mb-4 mt-5">
             Productos Ingresados
           </h5>
-          <Container style={{ maxWidth: 1000 }} className="">
+          <Container style={{ maxWidth: 1000 }}>
             {addedProducts.map((product: FormValues) => (
               <div
                 onClick={(e) => handleProductDetails(e, product)}

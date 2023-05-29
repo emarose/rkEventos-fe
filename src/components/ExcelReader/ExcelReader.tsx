@@ -7,9 +7,13 @@ import Notification from "../Notification/Notification";
 interface Props {
   getAllProducts: () => Promise<void>;
 }
+
 const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
   const [file, setFile] = useState<File | null>(null);
-  const [uniqueRows, setUniqueRows] = useState<string[][]>([]);
+  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  const [sheetsData, setSheetsData] = useState<
+    { sheetName: string; data: string[][] }[]
+  >([]);
 
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -24,30 +28,34 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
         const workbook = XLSX.read(e.target?.result as ArrayBuffer, {
           type: "binary",
         });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, {
-          header: 1,
+        const sheetsData: { sheetName: string; data: string[][] }[] = [];
+
+        workbook.SheetNames.forEach((sheetName) => {
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1,
+          });
+
+          const uniqueRows: string[][] = [];
+          const rowSet: Set<string> = new Set();
+
+          for (let i = 2; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            const singleProduct = row[8] === 1;
+            const rowKey = `${row[6]}-${row[7]}`;
+            const undefinedRow =
+              typeof row[6] === "undefined" || typeof row[7] === "undefined";
+
+            if (!rowSet.has(rowKey) && !undefinedRow && singleProduct) {
+              rowSet.add(rowKey);
+              uniqueRows.push(row);
+            }
+          }
+
+          sheetsData.push({ sheetName, data: uniqueRows });
         });
 
-        const uniqueRows: string[][] = [];
-        const rowSet: Set<string> = new Set();
-
-        for (let i = 2; i < jsonData.length; i++) {
-          const row = jsonData[i];
-
-          let singleProduct = row[8] === 1;
-
-          const rowKey = `${row[6]}-${row[7]}`;
-          let undefinedRow = rowKey.split("-")[0] === "undefined";
-
-          if (!rowSet.has(rowKey) && !undefinedRow && singleProduct) {
-            rowSet.add(rowKey);
-            uniqueRows.push(row);
-          }
-        }
-        uniqueRows.sort((a, b) => a[6].localeCompare(b[6]));
-        setUniqueRows(uniqueRows);
+        setSheetsData(sheetsData);
       };
 
       reader.readAsBinaryString(file);
@@ -55,27 +63,30 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
   };
 
   const handleBulkUpload = async () => {
-    const formattedData = uniqueRows.map((product) => ({
-      description: `${product[6]} ${product[7]}`,
-      price: product[10],
-    }));
-
-    await AxiosInstance.post("/products/addBulk", formattedData)
-      .then((response) => {
-        if (response.status === 200) {
-          Notification.fire({
-            icon: "success",
-            position: "bottom",
-            title: "Producto ingresado exitosamente!",
-          });
-
-          getAllProducts();
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    console.log(formattedData);
+    const formattedData = sheetsData.flatMap((sheet) =>
+      sheet.data.map((row) => ({
+        description: `${row[6]} ${row[7]}`,
+        price: row[10] || 0,
+      }))
+    );
+    setIsLoading(true);
+    try {
+      const response = await AxiosInstance.post(
+        "/products/addBulk",
+        formattedData
+      );
+      if (response.status === 200) {
+        Notification.fire({
+          icon: "success",
+          position: "bottom",
+          title: "Productos ingresados exitosamente!",
+        });
+        getAllProducts();
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -92,27 +103,23 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
             />
           </Form.Group>
         </Form>
-
+        {isLoading ? <h5 className="text-center">Guardando Datos...</h5> : null}
         {file && (
           <Button variant="light" onClick={handleFileRead}>
             Leer Archivo
           </Button>
         )}
-
-        {uniqueRows.length > 0 && (
+        {sheetsData.length > 0 && (
           <Button className="" variant="info" onClick={handleBulkUpload}>
-            Ingresar productos
+            {isLoading ? <>Guardando Datos...</> : <>Ingresar productos</>}
           </Button>
         )}
         <hr className="border-info" />
-        {uniqueRows.length > 0 && (
-          <div className="table-responsive">
+        {sheetsData.map((sheet, index) => (
+          <div key={index} className="table-responsive">
             <table className="table table-dark m-auto w-auto">
               <thead>
                 <tr>
-                  {/*    <th className="text-info" style={{ fontWeight: 500 }}>
-                    #
-                  </th> */}
                   <th className="text-info" style={{ fontWeight: 500 }}>
                     Producto
                   </th>
@@ -128,9 +135,8 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
                 </tr>
               </thead>
               <tbody>
-                {uniqueRows.map((row, index, arr) => (
-                  <tr key={index}>
-                    {/* <td>{index + 1}</td> */}
+                {sheet.data.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
                     <td>{row[6]}</td>
                     <td>{row[7]}</td>
                     <td style={{ textAlign: "right", minWidth: "12ch" }}>
@@ -141,7 +147,7 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
               </tbody>
             </table>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );

@@ -91,13 +91,11 @@ export type Product = {
 }
 
 export type ProductLabel = {
-  label: string;
-  value: {
-    product_id: string;
-    price: string;
-    description: string;
-  };
+  product_id: string;
+  description: string;
+  price: string;
 };
+
 export type PopularProduct = {
   description: string,
   price: number,

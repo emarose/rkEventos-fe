@@ -5,7 +5,7 @@ import { Container, Form } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import EventTable from "../../components/EventTable/EventTable";
 import OrderTable from "../../components/OrderTable/OrderTable";
-import { EventLabel, Order } from "../../types/types";
+import { EventLabel, EventProps, Order } from "../../types/types";
 
 const Info = () => {
   const {
@@ -21,7 +21,7 @@ const Info = () => {
   } = useForm();
 
   const [eventLabels, setEventLabels] = useState<EventLabel[]>([]);
-  const [eventData, setEventData] = useState<[]>([]);
+  const [eventData, setEventData] = useState<EventProps[]>([]);
   const [orderData, setOrderData] = useState<Order | null>(null);
   const [showOrderTable, setShowOrderTable] = useState<Boolean>(false);
   const [showEventTable, setShowEventTable] = useState<Boolean>(false);
@@ -57,6 +57,7 @@ const Info = () => {
       await AxiosInstance.get(`/events/getById/${event_id}`)
         .then((response) => {
           setEventData(response.data);
+
           setShowEventTable(true);
           setShowOrderTable(false);
           setValue("orderId", null);
@@ -88,6 +89,23 @@ const Info = () => {
           console.log(error);
         });
     }
+  };
+
+  const [sortOrder, setSortOrder] = useState("asc"); // or 'desc'
+
+  const handleHeaderClick = () => {
+    const newOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+    const sortedData = [...eventData].sort((a: any, b: any) => {
+      if (newOrder === "asc") {
+        return a.payment_method.localeCompare(b.payment_method);
+      } else {
+        return b.payment_method.localeCompare(a.payment_method);
+      }
+    });
+    console.log(sortedData);
+
+    setEventData(sortedData);
   };
 
   useEffect(() => {
@@ -149,7 +167,11 @@ const Info = () => {
       </Form>
 
       {showEventTable && (
-        <EventTable event={eventData} fetchData={handleSelectEvent} />
+        <EventTable
+          event={eventData}
+          fetchData={handleSelectEvent}
+          onHeaderClick={handleHeaderClick}
+        />
       )}
       {showOrderTable && (orderData ? <OrderTable order={orderData} /> : null)}
     </Container>

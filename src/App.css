@@ -38,7 +38,27 @@ body {
 td {
   padding: 15px !important;
 }
-
+#autocomplete-input {
+  background-color: #261436;
+}
+#autocomplete-input a:hover {
+  background-color: rgb(34, 19, 48);
+  color: var(--info);
+}
+#autocomplete-input * {
+  text-transform: capitalize;
+  z-index: 150;
+  color: whitesmoke;
+  font-weight: 500;
+}
+#autocomplete-input mark {
+  color: var(--info);
+}
+/* .rbt-menu * {
+  padding: 0;
+  margin: 0;
+  background-color: red !important;
+} */
 @media (max-width: 768px) {
   .displayButtons {
     display: none !important;

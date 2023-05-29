@@ -9,9 +9,10 @@ import { RxCheck, RxCross2, RxTrash } from "react-icons/rx";
 type EventTableProps = {
   event: EventProps[];
   fetchData: (event: any, event_id: string) => void;
+  onHeaderClick: () => void;
 };
 
-const EventTable = ({ event, fetchData }: EventTableProps) => {
+const EventTable = ({ event, fetchData, onHeaderClick }: EventTableProps) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -38,7 +39,6 @@ const EventTable = ({ event, fetchData }: EventTableProps) => {
     event.preventDefault();
     setConfirmDelete(order_id);
   };
-
   return (
     <>
       {event[0] ? (
@@ -127,7 +127,12 @@ const EventTable = ({ event, fetchData }: EventTableProps) => {
                 {isMobile ? (
                   <th>Pago</th>
                 ) : (
-                  <th style={{ whiteSpace: "nowrap" }}>Método de pago</th>
+                  <th
+                    onClick={onHeaderClick}
+                    style={{ whiteSpace: "nowrap", cursor: "pointer" }}
+                  >
+                    Método de pago
+                  </th>
                 )}
 
                 <th>Producto</th>

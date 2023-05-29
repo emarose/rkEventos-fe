@@ -12,6 +12,7 @@ import {
   Order,
 } from "../../types/types";
 import OrderTable from "../../components/OrderTable/OrderTable";
+import { AutocompleteInput } from "../../components/AutoCompleteInput/AutocompleteInput ";
 
 type SelectedProductItem = {
   product: Product;
@@ -19,14 +20,11 @@ type SelectedProductItem = {
 };
 
 const NewOrder = () => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
   const [selectedProducts, setSelectedProducts] = useState<
     SelectedProductItem[]
   >([]);
 
-  const [productOptions, setProductOptions] = useState<[]>([]);
-
-  const [productsData, setProductsData] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<any>([]);
   const [productQuantity, setProductQuantity] = useState<number>(1);
 
   const [eventsData, setEventsData] = useState<[]>([]);
@@ -44,25 +42,20 @@ const NewOrder = () => {
 
   const discount = watch("discount");
 
-  const getAllProducts = async () => {
-    await AxiosInstance.get("/products")
-      .then((response) => {
-        let data = response["data"].rows;
+  const fetchOptions = async () => {
+    try {
+      const response = await AxiosInstance.get("/products");
+      const data = response.data.rows;
 
-        const draft = data.map((product: any) => ({
-          label: product.description,
-          value: {
-            price: product.price,
-            description: product.description,
-          },
-        }));
-
-        setProductsData(data);
-        setProductOptions(draft);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      return data.map((product: any) => ({
+        product_id: product.product_id,
+        description: product.description,
+        price: product.price,
+      }));
+    } catch (error) {
+      console.error("Error fetching options:", error);
+      return [];
+    }
   };
 
   const getAllEvents = async () => {
@@ -144,8 +137,9 @@ const NewOrder = () => {
     if (selectedProduct) {
       setSelectedProducts([
         ...selectedProducts,
-        { product: selectedProduct, quantity: productQuantity },
+        { product: selectedProduct[0], quantity: productQuantity },
       ]);
+      setSelectedProduct([]);
     }
   };
 
@@ -155,15 +149,9 @@ const NewOrder = () => {
     setSelectedProducts(updatedProducts);
   };
 
-  const handleSelectProduct = (event: any) => {
-    const setProduct: Product | undefined = productsData?.find(
-      (product) => product.description === event.target.value
-    );
-    setSelectedProduct(setProduct);
-  };
-
   const totalPrice = useMemo(() => {
     return selectedProducts.reduce((sum, addedProduct) => {
+      console.log("selected products", addedProduct);
       const productPrice = Number(
         addedProduct.product.price
           .toString()
@@ -177,14 +165,18 @@ const NewOrder = () => {
     }, 0);
   }, [selectedProducts]);
 
+  const handleOptionChange = (selected: ProductLabel[]) => {
+    setSelectedProduct(selected);
+  };
+
   useEffect(() => {
-    getAllProducts();
     getAllEvents();
   }, []);
 
   return (
     <Container>
       <h1 className="text-info my-4">Nueva Orden</h1>
+
       <Form
         onSubmit={handleSubmit(onSubmit)}
         className="d-flex flex-column gap-4"
@@ -250,7 +242,13 @@ const NewOrder = () => {
           {/* Product */}
           <div className="col-md-8">
             <Form.Label>Productos</Form.Label>
-            <Controller
+
+            <AutocompleteInput
+              fetchOptions={fetchOptions}
+              selectedOption={selectedProduct}
+              onOptionChange={handleOptionChange}
+            />
+            {/* <Controller
               name="products"
               control={control}
               render={({ field: { onChange } }) => (
@@ -272,7 +270,7 @@ const NewOrder = () => {
                   )}
                 </Form.Select>
               )}
-            />
+            /> */}
           </div>
 
           {/* Quantity */}
@@ -303,77 +301,98 @@ const NewOrder = () => {
         </Form.Group>
 
         {selectedProducts?.length > 0 && (
-          <Container fluid className="mt-3">
-            <ul className="rounded border border-info shadow py-2 d-flex  flex-column align-items-center">
+          <>
+            <p className="text-info my-1">Productos ingresados</p>
+            <Container style={{ maxWidth: 1200 }}>
               {selectedProducts.map(
                 (addedProduct: SelectedProductItem, index: number) => (
-                  <li
-                    style={{
-                      maxWidth: 600,
-                      minWidth: 200,
-                      textTransform: "capitalize",
-                    }}
-                    className="list-unstyled border gap-4 d-flex align-items-center justify-content-between border-info bg-opacity-25 bg-info my-2 py-1 px-2 rounded"
+                  <div
+                    //onClick={(e) => handleProductDetails(e, product)}
                     key={index}
+                    style={{
+                      cursor: "pointer",
+                      border: "1px solid transparent",
+                    }}
+                    className="bg-info p-2 my-1 bg-opacity-25 rounded"
                   >
-                    <span>{addedProduct.product.description} </span>
-                    <span>{addedProduct.product.price}</span>
-                    <span>({addedProduct.quantity})</span>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => handleRemoveProduct(index)}
-                    >
-                      <RxTrash size={24} />
-                    </Button>
-                  </li>
+                    <div className="mx-1 row d-flex align-items-center justify-content-between">
+                      <span
+                        className="col-md-6"
+                        style={{
+                          textTransform: "capitalize",
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {addedProduct.product.description}
+                      </span>
+                      <span className="col-md-3">
+                        {addedProduct.product.price}
+                      </span>
+                      <span className="col-md-2">
+                        ({addedProduct.quantity})
+                      </span>
+                      <span className="col-md-1">
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleRemoveProduct(index)}
+                        >
+                          <RxTrash size={24} />
+                        </Button>
+                      </span>
+                    </div>
+                  </div>
                 )
               )}
-            </ul>
 
-            {/* Discount */}
-            <Form.Group controlId="formDiscount" className="mt-4">
-              <Form.Label>Descuento</Form.Label>
-              <Controller
-                name="discount"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                  <Form.Control
-                    className="bg-dark bg-opacity-75 text-info border-info"
-                    type="number"
-                    step=".01"
-                    max={totalPrice}
-                    defaultValue={value}
-                    onChange={onChange}
-                  />
-                )}
-              />
-            </Form.Group>
+              {/* Discount */}
+              <Form.Group controlId="formDiscount" className="mt-4">
+                <Form.Label>Descuento</Form.Label>
+                <Controller
+                  name="discount"
+                  control={control}
+                  render={({ field: { value, onChange } }) => (
+                    <Form.Control
+                      className="bg-dark bg-opacity-75 text-info border-info"
+                      type="number"
+                      step=".01"
+                      max={totalPrice}
+                      defaultValue={value}
+                      onChange={onChange}
+                    />
+                  )}
+                />
+              </Form.Group>
 
-            <h5 className="text-info shadow text-center my-3 bg-info bg-opacity-25 p-3 border border-info rounded w-75 m-auto">
-              <span className="text-info ">Total a cobrar: </span>
-              <span>
-                {totalPrice.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}{" "}
-                -{" "}
-                {(discount ? parseFloat(discount) : 0).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }) || "$0"}{" "}
-                ={" "}
-                {(
-                  totalPrice - (discount ? parseFloat(discount) : 0)
-                ).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }) || "$0"}
-              </span>
-            </h5>
-          </Container>
+              <h5 className="text-info shadow text-center my-3 bg-info bg-opacity-25 p-3 border border-info rounded w-75 m-auto">
+                <span className="text-info ">Total a cobrar: </span>
+                <span>
+                  {totalPrice.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}{" "}
+                  -{" "}
+                  {(discount ? parseFloat(discount) : 0).toLocaleString(
+                    "en-US",
+                    {
+                      style: "currency",
+                      currency: "USD",
+                    }
+                  ) || "$0"}{" "}
+                  ={" "}
+                  {(
+                    totalPrice - (discount ? parseFloat(discount) : 0)
+                  ).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }) || "$0"}
+                </span>
+              </h5>
+            </Container>
+          </>
         )}
-
         {errors.products && <Form.Text>{errors.products.message}</Form.Text>}
 
         <Button className="btn btn-info shadow-lg mt-4" type="submit">
