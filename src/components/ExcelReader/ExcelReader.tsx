@@ -39,7 +39,21 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
           const uniqueRows: string[][] = [];
           const rowSet: Set<string> = new Set();
 
-          for (let i = 2; i < jsonData.length; i++) {
+          for (let i = 0; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (row.length !== 0) console.log(row[0]);
+
+            const rowKey = row[0];
+
+            const undefinedRow = typeof jsonData[i][0] === "undefined";
+
+            if (!rowSet.has(rowKey) && !undefinedRow) {
+              rowSet.add(rowKey);
+              uniqueRows.push(row);
+            }
+          }
+
+          /* for (let i = 2; i < jsonData.length; i++) {
             const row = jsonData[i];
             const singleProduct = row[8] === 1;
             const rowKey = `${row[6]}-${row[7]}`;
@@ -50,7 +64,7 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
               rowSet.add(rowKey);
               uniqueRows.push(row);
             }
-          }
+          } */
 
           sheetsData.push({ sheetName, data: uniqueRows });
         });
