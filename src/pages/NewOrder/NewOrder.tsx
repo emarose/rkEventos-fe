@@ -176,7 +176,6 @@ const NewOrder = () => {
   return (
     <Container>
       <h1 className="text-info my-4">Nueva Orden</h1>
-
       <Form
         onSubmit={handleSubmit(onSubmit)}
         className="d-flex flex-column gap-4"

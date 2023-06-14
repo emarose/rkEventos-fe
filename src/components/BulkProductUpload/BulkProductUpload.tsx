@@ -8,7 +8,7 @@ interface Props {
   getAllProducts: () => Promise<void>;
 }
 
-const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
+const BulkProductUpload: React.FC<Props> = ({ getAllProducts }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [sheetsData, setSheetsData] = useState<
@@ -36,37 +36,7 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
             header: 1,
           });
 
-          const uniqueRows: string[][] = [];
-          const rowSet: Set<string> = new Set();
-
-          for (let i = 0; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            if (row.length !== 0) console.log(row[0]);
-
-            const rowKey = row[0];
-
-            const undefinedRow = typeof jsonData[i][0] === "undefined";
-
-            if (!rowSet.has(rowKey) && !undefinedRow) {
-              rowSet.add(rowKey);
-              uniqueRows.push(row);
-            }
-          }
-
-          /* for (let i = 2; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            const singleProduct = row[8] === 1;
-            const rowKey = `${row[6]}-${row[7]}`;
-            const undefinedRow =
-              typeof row[6] === "undefined" || typeof row[7] === "undefined";
-
-            if (!rowSet.has(rowKey) && !undefinedRow && singleProduct) {
-              rowSet.add(rowKey);
-              uniqueRows.push(row);
-            }
-          } */
-
-          sheetsData.push({ sheetName, data: uniqueRows });
+          sheetsData.push({ sheetName, data: jsonData });
         });
 
         setSheetsData(sheetsData);
@@ -79,8 +49,8 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
   const handleBulkUpload = async () => {
     const formattedData = sheetsData.flatMap((sheet) =>
       sheet.data.map((row) => ({
-        description: `${row[6]} ${row[7]}`,
-        price: row[10] || 0,
+        description: row[0],
+        price: row[3],
       }))
     );
     setIsLoading(true);
@@ -129,6 +99,7 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
           </Button>
         )}
         <hr className="border-info" />
+
         {sheetsData.map((sheet, index) => (
           <div key={index} className="table-responsive">
             <table className="table table-dark m-auto w-auto">
@@ -137,9 +108,7 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
                   <th className="text-info" style={{ fontWeight: 500 }}>
                     Producto
                   </th>
-                  <th className="text-info" style={{ fontWeight: 500 }}>
-                    Descripción
-                  </th>
+
                   <th
                     className="text-info"
                     style={{ fontWeight: 500, textAlign: "center" }}
@@ -151,10 +120,9 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
               <tbody>
                 {sheet.data.map((row, rowIndex) => (
                   <tr key={rowIndex}>
-                    <td>{row[6]}</td>
-                    <td>{row[7]}</td>
+                    <td>{row[0]}</td>
                     <td style={{ textAlign: "right", minWidth: "12ch" }}>
-                      $ {row[10]},00
+                      $ {row[3]},00
                     </td>
                   </tr>
                 ))}
@@ -167,4 +135,4 @@ const ExcelReader: React.FC<Props> = ({ getAllProducts }) => {
   );
 };
 
-export default ExcelReader;
+export default BulkProductUpload;

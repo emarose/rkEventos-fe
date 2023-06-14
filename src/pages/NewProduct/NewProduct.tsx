@@ -5,7 +5,7 @@ import { RxPencil1, RxCheck, RxTrash, RxCross2 } from "react-icons/rx";
 import AxiosInstance from "../../config/apiClient";
 import Notification from "../../components/Notification/Notification";
 import Swal from "sweetalert2";
-import ExcelReader from "../../components/ExcelReader/ExcelReader";
+import ExcelReader from "../../components/BulkProductUpload/BulkProductUpload";
 
 type FormValues = {
   product_id: number;

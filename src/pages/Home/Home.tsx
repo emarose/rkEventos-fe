@@ -9,7 +9,7 @@ import AxiosInstance from "../../config/apiClient";
 import { Event, PopularProduct } from "../../types/types";
 import HomeProductsCard from "../../components/HomeProductsCard/HomeProductsCard";
 import { Chart } from "react-google-charts";
-import ExcelReader from "../../components/ExcelReader/ExcelReader";
+import ExcelReader from "../../components/BulkProductUpload/BulkProductUpload";
 
 const cardsData = [
   { title: "Productos", icon: <BiBox />, href: "/new-product" },
